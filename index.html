@@ -8,6 +8,9 @@ function convert() {
     input = JSON.parse(document.getElementById('input').value);
     lines = input.features;
 
+    var lines_count = lines.length;
+    var breaked;
+
     while (lines.length > 1) {
         var end_point_index = lines[0].geometry.coordinates.length - 1;
         var end_point = lines[0].geometry.coordinates[end_point_index];
@@ -59,11 +62,19 @@ function convert() {
             }
         }
 
-        console.log(lines.length);
+        if (lines.length == lines_count) {
+            document.getElementById('output').value = 'Unable to convert this GeoJSON into one line';
+            breaked = true;
+            break;
+        } else {
+            lines_count = lines.length;
+        }
     }
 
-    input.features = lines;
-    document.getElementById('output').value = JSON.stringify(input, "", 4);
+    if (!breaked) {
+        input.features = lines;
+        document.getElementById('output').value = JSON.stringify(input, "", 4);
+    }
 }
 		</script>
 	</head>
