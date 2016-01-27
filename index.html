@@ -12,19 +12,26 @@ function convert() {
     var breaked;
 
     while (lines.length > 1) {
+        var ok = false;
+
+        if (lines[0].geometry["type"] == "Polygon") {
+                lines.splice(0, 1);
+                ok = true;
+        }
         var end_point_index = lines[0].geometry.coordinates.length - 1;
         var end_point = lines[0].geometry.coordinates[end_point_index];
         var end_point_string = end_point.toString();
         var start_point = lines[0].geometry.coordinates[0];
         var start_point_string = start_point.toString();
-        var ok = false;
 
-        for (var i = 1; i < lines.length; i++) {
-            if (lines[i].geometry.coordinates[0].toString() == end_point_string) {
-                lines[0].geometry.coordinates = lines[0].geometry.coordinates.concat(lines[i].geometry.coordinates);
-                lines.splice(i, 1);
-                ok = true;
-                break;
+        if (!ok) {
+            for (var i = 1; i < lines.length; i++) {
+                if (lines[i].geometry.coordinates[0].toString() == end_point_string) {
+                    lines[0].geometry.coordinates = lines[0].geometry.coordinates.concat(lines[i].geometry.coordinates);
+                    lines.splice(i, 1);
+                    ok = true;
+                    break;
+                }
             }
         }
 
