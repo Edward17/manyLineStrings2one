@@ -15,14 +15,24 @@ function convert() {
         var ok = false;
 
         if (lines[0].geometry["type"] == "Polygon") {
-                lines.splice(0, 1);
-                ok = true;
+            lines.splice(0, 1);
+            ok = true;
         }
+
         var end_point_index = lines[0].geometry.coordinates.length - 1;
         var end_point = lines[0].geometry.coordinates[end_point_index];
         var end_point_string = end_point.toString();
         var start_point = lines[0].geometry.coordinates[0];
         var start_point_string = start_point.toString();
+
+        if (start_point_string == end_point_string) {
+            if (!lines[0].properties.manyLineStringsToOne) {
+                lines.splice(0, 1);
+                ok = true;
+            } else {
+                break;
+            }
+        }
 
         if (!ok) {
             for (var i = 1; i < lines.length; i++) {
@@ -68,6 +78,8 @@ function convert() {
                 }
             }
         }
+
+        lines[0].properties.manyLineStringsToOne = 'yes';
 
         if (lines.length == lines_count) {
             document.getElementById('output').value = 'Unable to convert this GeoJSON into one line';
