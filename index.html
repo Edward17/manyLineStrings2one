@@ -8,31 +8,35 @@ function convert() {
     input = JSON.parse(document.getElementById('input').value);
     lines = input.features;
 
+    for (var i = 0; i < lines.length; i++) {
+        if (lines[i].geometry["type"] == "Polygon" || lines[i].geometry["type"] == "Point") {
+            lines.splice(i, 1);
+        }
+    }
+
+    for (var i = 0; i < lines.length; i++) {
+        var start_point = lines[i].geometry.coordinates[0];
+        var start_point_string = start_point.toString();
+        var end_point_index = lines[i].geometry.coordinates.length - 1;
+        var end_point = lines[i].geometry.coordinates[end_point_index];
+        var end_point_string = end_point.toString();
+
+        if (start_point_string == end_point_string && !lines[i].properties.manyLineStringsToOne) {
+            lines.splice(i, 1);
+        }
+    }
+
     var lines_count = lines.length;
     var breaked;
 
     while (lines.length > 1) {
         var ok = false;
 
-        if (lines[0].geometry["type"] == "Polygon") {
-            lines.splice(0, 1);
-            ok = true;
-        }
-
         var end_point_index = lines[0].geometry.coordinates.length - 1;
         var end_point = lines[0].geometry.coordinates[end_point_index];
         var end_point_string = end_point.toString();
         var start_point = lines[0].geometry.coordinates[0];
         var start_point_string = start_point.toString();
-
-        if (start_point_string == end_point_string) {
-            if (!lines[0].properties.manyLineStringsToOne) {
-                lines.splice(0, 1);
-                ok = true;
-            } else {
-                break;
-            }
-        }
 
         if (!ok) {
             for (var i = 1; i < lines.length; i++) {
